@@ -21,6 +21,7 @@ This repository contains the source code for a **Sales Operations Digital Employ
 | **[docs/a365-guided-setup.md](docs/a365-guided-setup.md)** | AI-guided a365 CLI setup reference (from [Agent365-devTools](https://github.com/microsoft/Agent365-devTools)). |
 | **[docs/TROUBLESHOOTING-A365.md](docs/TROUBLESHOOTING-A365.md)** | Known issues and fixes (ISS-001 – ISS-029). |
 | **[docs/INCIDENT-2026-02-MEETING-REPORT.md](docs/INCIDENT-2026-02-MEETING-REPORT.md)** | Post-incident write-up for transcript/report stabilization and runbook learnings. |
+| **[PUBLIC-ANONYMIZATION.md](PUBLIC-ANONYMIZATION.md)** | Public-safe placeholder rules and publish workflow. |
 
 ## \uD83D\uDE80 Quick Start
 
