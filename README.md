@@ -4,7 +4,7 @@ This repository contains the source code for a **Sales Operations Digital Employ
 
 ## Current Status (2026-02-16)
 
-- ✅ Deployment healthy in Azure Container Apps (`azcaxyseurue7b6nw--azd-1771242381` active, 100% traffic)
+- ✅ Deployment healthy in Azure Container Apps (`<container-app-revision>` active, 100% traffic)
 - ✅ Health endpoint reports `status: ok`, `agent_initialized: true`, MCP state `ready`
 - ✅ Tests passing locally (`pytest -q`)
 - ✅ Report/email UX updates live (summary normalization, readable header, sentiment + expansion sections)

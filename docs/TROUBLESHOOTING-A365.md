@@ -56,7 +56,7 @@
 
 | Item | Status |
 |------|--------|
-| Active revision | `azcaxyseurue7b6nw--azd-1771242381` |
+| Active revision | `<container-app-revision>` |
 | Container app health | ✅ Running / Healthy / 100% traffic |
 | `/api/health` | ✅ `status=ok`, `agent_initialized=true`, `mcp.state=ready` |
 | Tests | ✅ `pytest -q` passing |
@@ -74,8 +74,8 @@ A split-tenant setup separates **Azure infrastructure hosting** from the **Micro
 
 | Concern | Tenant | Tenant ID | Domain |
 |---------|--------|-----------|--------|
-| **Infrastructure** (Container Apps, ACR, Key Vault, OpenAI) | HOSKING | `b5c09a39-9df6-437a-a76e-19095fa6f20d` | `hosking.wales` |
-| **Identity** (Agent Blueprint, Bot, User, Permissions) | Contoso | `c2833f41-c31d-4c2f-98d1-947fdb699aba` | `M365CPI14187042.OnMicrosoft.com` |
+| **Infrastructure** (Container Apps, ACR, Key Vault, OpenAI) | `<infra-tenant>` | `<azure-tenant-id>` | `<infra-tenant-domain>` |
+| **Identity** (Agent Blueprint, Bot, User, Permissions) | `<identity-tenant>` | `<m365-tenant-id>` | `example.com` |
 
 ### Why This Matters
 
@@ -222,8 +222,8 @@ Before running `a365 config init`, create an app registration in the **identity 
 **Config workaround:**
 ```json
 {
-  "tenantId": "c2833f41-c31d-4c2f-98d1-947fdb699aba",
-  "subscriptionId": "c2833f41-c31d-4c2f-98d1-947fdb699aba",
+  "tenantId": "<m365-tenant-id>",
+  "subscriptionId": "<subscription-id>",
   "needDeployment": false
 }
 ```
@@ -258,7 +258,7 @@ dsregcmd /status
 **Register second tenant account with WAM:**
 1. Open **Settings → Accounts → Access work or school**
 2. Click **Connect**
-3. Sign in with the identity tenant account (e.g., `CoreyG@M365CPI14187042.OnMicrosoft.com`)
+3. Sign in with the identity tenant account (e.g., `manager@example.com`)
 4. This performs a **Workplace Join** — it does NOT change the primary Azure AD Join
 
 ---
@@ -379,7 +379,7 @@ pwsh --version
 |-------|--------|
 | **Stage** | Blueprint activation / agent instance creation |
 | **Symptom** | Error: "There's no Agent 365 licence available for this agent" when activating the blueprint in M365 admin center |
-| **Root Cause** | The agentic user (`salesopsbot@M365CPI14187042.OnMicrosoft.com`) does not have a **Microsoft Agent 365 Frontier** license assigned. Agent users require licenses just like regular users |
+| **Root Cause** | The agentic user (`agent.user@example.com`) does not have a **Microsoft Agent 365 Frontier** license assigned. Agent users require licenses just like regular users |
 | **Impact** | **Blocking** — cannot create agent instances without the license |
 | **Resolution** | 1. **Check license availability**: M365 admin center → **Billing** → **Licenses** — verify "Microsoft Agent 365 Frontier" is listed and has available seats<br>2. **Assign the license**: M365 admin center → **Users** → find the agentic user → **Licenses and apps** → assign **Microsoft Agent 365 Frontier**<br>3. **Required licenses for full functionality**: Microsoft 365 E5 (or equivalent), Teams Enterprise, Microsoft 365 Copilot<br>4. **If no Frontier license exists**: Verify your Frontier preview enrollment at https://adoption.microsoft.com/copilot/frontier-program/ — license propagation may take time |
 | **Actual Fix** | **Frontier enrollment alone does NOT provision the license.** Had to obtain a **trial license pack** for Microsoft Agent 365 and apply it to the Contoso tenant via M365 admin center → Billing → Purchase services. Once the trial licenses were active, the agent could be set up from the blueprint via the Agents store |
@@ -402,9 +402,9 @@ pwsh --version
 |-------|--------|
 | **Stage** | Post-activation — agent instance created |
 | **Symptom** | Agent user not visible in Global Address List (GAL) or people picker. Cannot invite agent to meetings |
-| **Root Cause** | **Multiple factors:**<br>1. **GAL propagation delay**: Exchange Online OAB takes up to 24 hours to include new mailboxes<br>2. **NO_TEAMS license**: Agent license `MICROSOFT_AGENT_FRONTIER_NO_TEAMS` excludes all Teams service plans — agent won't appear in Teams people picker<br>3. **Actual UPN differs from configured**: Config has `salesopsbot@...` but actual agentic user is `SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com` |
+| **Root Cause** | **Multiple factors:**<br>1. **GAL propagation delay**: Exchange Online OAB takes up to 24 hours to include new mailboxes<br>2. **NO_TEAMS license**: Agent license `MICROSOFT_AGENT_FRONTIER_NO_TEAMS` excludes all Teams service plans — agent won't appear in Teams people picker<br>3. **Actual UPN differs from configured**: Config has `agent.user@...` but actual agentic user is `synthetic.worker@example.com` |
 | **Impact** | Users cannot find the agent via GAL search or add it to meeting invites |
-| **Workaround** | Type the full email address directly in the meeting invite "To" field using **Outlook on the Web** (OWA searches Exchange directly, bypasses cached OAB):<br>`SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com` |
+| **Workaround** | Type the full email address directly in the meeting invite "To" field using **Outlook on the Web** (OWA searches Exchange directly, bypasses cached OAB):<br>`synthetic.worker@example.com` |
 | **Calendar Config Applied** | `Set-CalendarProcessing -DeleteSubject $false -DeleteComments $false -AddOrganizerToSubject $false -AllowConflicts $true` — preserves meeting context for transcript extraction |
 | **Exchange Verification** | `Get-Mailbox` confirms: `HiddenFromAddressListsEnabled: False`, `RecipientType: UserMailbox`, `IsAgenticUser: True` — settings are correct, just needs propagation time |
 | **Long-term Fix** | Wait 24h for full OAB propagation. After that, agent will be searchable by display name "Sales Op Synth Worker" in Outlook GAL. Teams limitation is by design |
@@ -432,7 +432,7 @@ pwsh --version
 | Field | Detail |
 |-------|--------|
 | **Stage** | Post-deployment — Container App running but agent unreachable |
-| **Symptom** | Bot endpoint (`https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/`) accepts TLS but HTTP requests time out. Agent added to a meeting invite but never accepts. Container revision shows `RunningState: Failed` with `startup probe failed: connection refused` in system logs |
+| **Symptom** | Bot endpoint (`https://<container-app-fqdn>/`) accepts TLS but HTTP requests time out. Agent added to a meeting invite but never accepts. Container revision shows `RunningState: Failed` with `startup probe failed: connection refused` in system logs |
 | **Root Cause** | **Seven cascading issues** discovered during investigation (see table below) |
 | **Impact** | Agent completely non-functional — cannot accept meetings, respond to messages, or process any requests |
 | **Resolution** | Fixed all seven issues across code, Docker config, and Container App environment variables |
@@ -509,7 +509,7 @@ CONNECTIONSMAP__0__CONNECTION=SERVICE_CONNECTION
 |-------|--------|
 | **Stage** | Runtime — agent deployed and reachable, Teams channel routing messages successfully |
 | **Symptom** | Messaging the agent in Teams returns: `Access denied due to invalid subscription key or wrong API endpoint. Make sure to provide a valid key for an active subscription and use a correct regional API endpoint for your resource.` (HTTP 401 from Azure OpenAI) |
-| **Root Cause** | Two-layer caching issue: (1) The API key stored in Key Vault (`azure-openai-api-key`) did not match the actual key on the `salesopsbot-openai` Azure OpenAI resource, and (2) Container Apps cache Key Vault secret values at revision creation time — restarting a revision does NOT re-fetch KV secrets |
+| **Root Cause** | Two-layer caching issue: (1) The API key stored in Key Vault (`azure-openai-api-key`) did not match the actual key on the `<azure-openai-resource>` Azure OpenAI resource, and (2) Container Apps cache Key Vault secret values at revision creation time — restarting a revision does NOT re-fetch KV secrets |
 | **Impact** | Agent responds in Teams but cannot generate any LLM-powered replies — every user message hits the 401 |
 | **Resolution** | See steps below |
 
@@ -517,18 +517,18 @@ CONNECTIONSMAP__0__CONNECTION=SERVICE_CONNECTION
 
 ```bash
 # 1. Verify the Azure OpenAI resource exists and get its endpoint
-az cognitiveservices account show -n salesopsbot-openai -g rg-salesopsbot \
+az cognitiveservices account show -n <azure-openai-resource> -g <resource-group> \
   --query "{endpoint:properties.endpoint, sku:sku.name, state:properties.provisioningState}" -o table
 
 # 2. Verify the deployment exists
-az cognitiveservices account deployment list -n salesopsbot-openai -g rg-salesopsbot \
+az cognitiveservices account deployment list -n <azure-openai-resource> -g <resource-group> \
   --query "[].{name:name, model:properties.model.name, version:properties.model.version}" -o table
 
 # 3. Get the actual API key from the resource
-az cognitiveservices account keys list -n salesopsbot-openai -g rg-salesopsbot -o json
+az cognitiveservices account keys list -n <azure-openai-resource> -g <resource-group> -o json
 
 # 4. Test the key directly (PowerShell)
-$key = (az cognitiveservices account keys list -n salesopsbot-openai -g rg-salesopsbot --query "key1" -o tsv).Trim()
+$key = (az cognitiveservices account keys list -n <azure-openai-resource> -g <resource-group> --query "key1" -o tsv).Trim()
 $uri = "https://uksouth.api.cognitive.microsoft.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-12-01-preview"
 $headers = @{"api-key"=$key; "Content-Type"="application/json"}
 $body = '{"messages":[{"role":"user","content":"Say hello"}],"max_tokens":10}'
@@ -536,11 +536,11 @@ Invoke-RestMethod -Uri $uri -Method POST -Headers $headers -Body $body
 # Expected: SUCCESS with a response. If this fails, the key or endpoint is wrong.
 
 # 5. Check what the Container App is using
-az containerapp show -n azcaxyseurue7b6nw -g rg-salesopsbot \
+az containerapp show -n <container-app-name> -g <resource-group> \
   --query "properties.template.containers[0].env[?name=='AZURE_OPENAI_API_KEY']" -o json
 
 # 6. Check the secret source (KV ref vs plain)
-az containerapp secret list -n azcaxyseurue7b6nw -g rg-salesopsbot -o json
+az containerapp secret list -n <container-app-name> -g <resource-group> -o json
 ```
 
 #### Fix
@@ -560,11 +560,11 @@ az keyvault secret set --vault-name <vault> --name azure-openai-api-key --value 
 # - Switch to a plain-text secret (Option B)
 
 # Option B: Replace KV reference with plain-text secret (faster, bypasses caching)
-$key = (az cognitiveservices account keys list -n salesopsbot-openai -g rg-salesopsbot --query "key1" -o tsv).Trim()
-az containerapp secret set -n azcaxyseurue7b6nw -g rg-salesopsbot --secrets "azure-openai-api-key=$key"
+$key = (az cognitiveservices account keys list -n <azure-openai-resource> -g <resource-group> --query "key1" -o tsv).Trim()
+az containerapp secret set -n <container-app-name> -g <resource-group> --secrets "azure-openai-api-key=$key"
 
 # Then restart the revision:
-az containerapp revision restart -n azcaxyseurue7b6nw -g rg-salesopsbot \
+az containerapp revision restart -n <container-app-name> -g <resource-group> \
   --revision <active-revision-name>
 
 # Verify health after restart:
@@ -1069,7 +1069,7 @@ MCP plugin 'mcp_PlannerServer' to agent tools
 | Commit | `bd09ba5` |
 |--------|-----------|
 | Image | `sales-ops-bot:fix-mcp-auth-v3` (digest `81f3d3c3`) |
-| Revision | `azcaxyseurue7b6nw--0000015` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1124,7 +1124,7 @@ After deploying revision --0000017 with `fix-mcp-headers-v1`:
 
 | Image | `salesopsbot:fix-mcp-headers-v1` (digest `5b5e1d34`) |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000017` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1194,7 +1194,7 @@ Pipeline Triggered: calendar_poll [ended] for 'Hosking Ltd Discussion'
 
 | Image | `salesopsbot:fix-hallucination-v1` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000019` |
+| Revision | `<container-app-revision>` |
 
 #### Outstanding: MCP gateway registration
 
@@ -1213,7 +1213,7 @@ This was resolved by switching to `ENVIRONMENT=Development` which uses local `To
 |-------|--------|
 | **Stage** | Runtime — agent deployed with 35 tools (4 MCP servers + 3 local), revision --0000032 |
 | **Symptom** | Agent shows typing indicator in Teams but never responds. Container logs show `HTTP/1.1 429 Too Many Requests` from Azure OpenAI endpoint |
-| **Root Cause** | Azure OpenAI deployment `gpt-4o` on `salesopsbot-openai` had a quota of only **10K TPM** (tokens per minute). With 35 tools, each prompt includes tool descriptions that consume ~3-5K tokens. A few rapid messages easily exceeded the limit |
+| **Root Cause** | Azure OpenAI deployment `gpt-4o` on `<azure-openai-resource>` had a quota of only **10K TPM** (tokens per minute). With 35 tools, each prompt includes tool descriptions that consume ~3-5K tokens. A few rapid messages easily exceeded the limit |
 | **Impact** | Agent completely unresponsive during rate-limited periods. No error shown to user in Teams |
 | **Resolution** | Increased TPM quota to **50K** on the `gpt-4o` deployment via Azure Portal → Azure OpenAI → Deployments → Edit → Tokens per minute |
 | **Prevention** | For agents with many tools (>10), allocate at least 30-50K TPM. Monitor token usage via Azure Monitor metrics |
@@ -1231,7 +1231,7 @@ This was resolved by switching to `ENVIRONMENT=Development` which uses local `To
 ```bash
 # Check current TPM allocation
 az cognitiveservices account deployment show \
-  --name salesopsbot-openai --resource-group rg-salesopsbot \
+  --name <azure-openai-resource> --resource-group <resource-group> \
   --deployment-name gpt-4o \
   --query "properties.rateLimits"
 
@@ -1279,7 +1279,7 @@ az containerapp logs show --name <app> --resource-group <rg> --type console --ta
 | **Resolution** | Added `or ""` fallback on all template substitution values |
 | **Prevention** | Always add None-safety when templating LLM-generated data |
 | **Image** | `salesopsbot:pipeline-v2` |
-| **Revision** | `azcaxyseurue7b6nw--0000034` |
+| **Revision** | `<container-app-revision>` |
 
 ---
 
@@ -1297,7 +1297,7 @@ az containerapp logs show --name <app> --resource-group <rg> --type console --ta
 
 ```bash
 # Must run while logged into Contoso tenant
-az login --tenant c2833f41-c31d-4c2f-98d1-947fdb699aba --allow-no-subscriptions
+az login --tenant <m365-tenant-id> --allow-no-subscriptions
 
 # Mail.Send (Application)
 az ad app permission add --id 8e5206be-48e3-4da4-b741-d3908cf7c30a \
@@ -1356,7 +1356,7 @@ az containerapp logs show --name <app> --resource-group <rg> --type console --ta
 
 | Image | `salesopsbot:pipeline-v4` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000036` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1381,7 +1381,7 @@ az containerapp logs show --name <app> --resource-group <rg> --type console --ta
 
 | Image | `salesopsbot:pipeline-v7b` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000040` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1398,7 +1398,7 @@ az containerapp logs show --name <app> --resource-group <rg> --type console --ta
 
 | Image | `salesopsbot:pipeline-v6` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000038` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1429,7 +1429,7 @@ if missing:
 
 | Image | `salesopsbot:pipeline-v7b` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000040` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1456,7 +1456,7 @@ McpServers.SharepointLists.All, McpServers.Teams.All, McpServers.Word.All
 
 | Image | `salesopsbot:pipeline-v7b` |
 |-------|---|
-| Revision | `azcaxyseurue7b6nw--0000040` |
+| Revision | `<container-app-revision>` |
 
 ---
 
@@ -1483,22 +1483,22 @@ McpServers.SharepointLists.All, McpServers.Teams.All, McpServers.Word.All
 
 | Resource | ID |
 |----------|----|
-| HOSKING Tenant | `b5c09a39-9df6-437a-a76e-19095fa6f20d` |
-| Contoso Tenant | `c2833f41-c31d-4c2f-98d1-947fdb699aba` |
+| HOSKING Tenant | `<azure-tenant-id>` |
+| Contoso Tenant | `<m365-tenant-id>` |
 | Custom Client App | `8e5206be-48e3-4da4-b741-d3908cf7c30a` |
 | Blueprint App ID | `c70fe227-230b-474c-bbf8-1d18483e2801` |
 | Blueprint SP | `7e3020aa-9049-4734-83de-22513dffdc86` |
 | Title ID | `T_ae143bb1-8f29-3a70-a2dc-ceab6f965d08` |
-| Bot Endpoint | `https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/api/messages` |
+| Bot Endpoint | `https://<container-app-fqdn>/api/messages` |
 | Agent App Instance ID | `5653b53b-bdd6-42cf-9a8e-5c16f495d44a` |
 | Agent User Object ID | `ec35260f-ceb9-40b1-9e8b-afafe29187cf` |
-| Agent User UPN | `SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com` |
+| Agent User UPN | `synthetic.worker@example.com` |
 | Agent 365 Tools API | `ea9ffc3e-8a23-4a7d-836d-234d7c7565c1` |
 | MCP Gateway Endpoint | `https://agent365.svc.cloud.microsoft/agents/{id}/mcpServers` |
 | Messaging Bot API | `5a807f24-c9de-44ee-a3a7-329e88a00ffc` |
 | Observability API | `9b975845-388f-4429-889e-eab1ef63949c` |
 | Power Platform API | `8578e004-a5c6-46e7-913e-12f58912df43` |
-| Container App | `azcaxyseurue7b6nw` |
+| Container App | `<container-app-name>` |
 | ACR | `azcrxyseurue7b6nw.azurecr.io` |
-| Azure OpenAI | `salesopsbot-openai` (S0, UK South, 50K TPM) |
-| Subscription | `43b2438e-00b7-443e-b336-34cb97a489d4` |
+| Azure OpenAI | `<azure-openai-resource>` (S0, UK South, 50K TPM) |
+| Subscription | `<subscription-id>` |

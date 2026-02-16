@@ -28,7 +28,7 @@ class MeetingProcessor:
     # In production this would come from meeting organiser / attendees.
     DEFAULT_SUMMARY_RECIPIENTS = os.getenv(
         "MEETING_SUMMARY_RECIPIENTS",
-        "SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com",
+        "meeting-recipient@example.com",
     ).split(",")
 
     def __init__(self, agent_instance, graph_client: GraphTranscriptClient):

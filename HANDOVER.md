@@ -17,7 +17,7 @@ Use these as the canonical runbooks:
 If any other document conflicts with these two files, treat these runbooks as the source of truth and update the stale document.
 
 ## 2. Current Codebase State ("As-Built")
-**Status:** Phases 1-11 Complete. Deployed to Azure Container Apps (revision `azcaxyseurue7b6nw--azd-1771242381`, active 100% traffic). Published to M365 via Agent 365 CLI (v1.2.0). Current repository baseline uses **4 MCP servers + 7 local tools**. ISS-014 through ISS-029 resolved (see `docs/TROUBLESHOOTING-A365.md`).
+**Status:** Phases 1-11 Complete. Deployed to Azure Container Apps (revision `<container-app-revision>`, active 100% traffic). Published to M365 via Agent 365 CLI (v1.2.0). Current repository baseline uses **4 MCP servers + 7 local tools**. ISS-014 through ISS-029 resolved (see `docs/TROUBLESHOOTING-A365.md`).
 
 ### Core Components
 *   **Identity**: Service Principal (Entra Agent ID).
@@ -61,8 +61,8 @@ Deployed **14 February 2026** to **Azure Container Apps** (UK South) using the A
 
 | Resource | Type | Name |
 |----------|------|------|
-| Resource Group | Microsoft.Resources/resourceGroups | `rg-salesopsbot` |
-| Container App | Microsoft.App/containerApps | `azcaxyseurue7b6nw` |
+| Resource Group | Microsoft.Resources/resourceGroups | `<resource-group>` |
+| Container App | Microsoft.App/containerApps | `<container-app-name>` |
 | Container Apps Env | Microsoft.App/managedEnvironments | `azcexyseurue7b6nw` |
 | Container Registry | Microsoft.ContainerRegistry/registries | `azcrxyseurue7b6nw` |
 | Key Vault | Microsoft.KeyVault/vaults | `azkvxyseurue7b6nw` |
@@ -70,10 +70,10 @@ Deployed **14 February 2026** to **Azure Container Apps** (UK South) using the A
 | Log Analytics | Microsoft.OperationalInsights/workspaces | `azlaxyseurue7b6nw` |
 | Managed Identity | Microsoft.ManagedIdentity/userAssignedIdentities | Auto-generated |
 
-*   **Endpoint**: `https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/`
-*   **Azure Portal**: [Resource Group](https://portal.azure.com/#@hosking.wales/resource/subscriptions/43b2438e-00b7-443e-b336-34cb97a489d4/resourceGroups/rg-salesopsbot/overview)
-*   **Subscription**: VS Sub No1 (`43b2438e-00b7-443e-b336-34cb97a489d4`)
-*   **Tenant**: HOSKING (`b5c09a39-9df6-437a-a76e-19095fa6f20d`)
+*   **Endpoint**: `https://<container-app-fqdn>/`
+*   **Azure Portal**: [Resource Group](https://portal.azure.com/#@<tenant-domain>/resource/subscriptions/<subscription-id>/resourceGroups/<resource-group>/overview)
+*   **Subscription**: `<subscription-id>`
+*   **Tenant**: `<azure-tenant-id>`
 *   **AZD Environment**: `salesopsbot`
 *   **Provisioning Tool**: AZD with Bicep IaC
 *   **Status**: **Running** (Provisioning Succeeded)
@@ -107,7 +107,7 @@ azd up
 ## 4. Credential & Identity Configuration (COMPLETE)
 
 ### Azure OpenAI
-*   **Resource**: `salesopsbot-openai` (UK South) in `rg-salesopsbot`
+*   **Resource**: `<azure-openai-resource>` (UK South) in `<resource-group>`
 *   **Model**: GPT-4o (GlobalStandard, **50K TPM** — increased from 10K to resolve 429 rate limiting)
 *   **Status**: Deployed and configured in AZD env vars
 
@@ -120,8 +120,8 @@ Two app registrations were created during the session:
 | Contoso | *(pre-existing)* | `8e5206be-48e3-4da4-b741-d3908cf7c30a` | **Active** |
 
 ### Split-Tenant Architecture
-*   **Infrastructure tenant**: HOSKING (`b5c09a39-9df6-437a-a76e-19095fa6f20d`) — hosts all Azure resources
-*   **Identity tenant**: Contoso (`c2833f41-c31d-4c2f-98d1-947fdb699aba`) — bot's identity lives here
+*   **Infrastructure tenant**: `<azure-tenant-id>` — hosts all Azure resources
+*   **Identity tenant**: `<m365-tenant-id>` — bot's identity lives here
 *   **Contoso Client Secret**: stored in Key Vault / local `.env` only (not committed)
 *   The Container App was redeployed with Contoso identity credentials successfully.
 
@@ -136,7 +136,7 @@ The initial deployment (Section 3) used AZD + Container Apps. The **official** M
 
 | Step | Command | Status |
 |------|---------|--------|
-| 1 | `az login --tenant c2833f41-... --allow-no-subscriptions` | ✅ Logged in as `CoreyG@M365CPI14187042.OnMicrosoft.com` |
+| 1 | `az login --tenant <m365-tenant-id> --allow-no-subscriptions` | ✅ Logged in as `manager@example.com` |
 | 2 | `a365 config init -c ./a365.config.json` | ✅ Config imported successfully |
 | 3 | `a365 setup requirements` | ✅ All checks passed (Frontier = warning only) |
 | 4 | `a365 setup infrastructure` | ⏭️ Skipped (`needDeployment: false`) |
@@ -151,8 +151,8 @@ The initial deployment (Section 3) used AZD + Container Apps. The **official** M
 *   **Blueprint SP Object ID**: `7e3020aa-9049-4734-83de-22513dffdc86`
 *   **Blueprint Display Name**: `Sales Ops Bot Blueprint`
 *   **Bot ID**: `c70fe227-230b-474c-bbf8-1d18483e2801` (same as blueprint)
-*   **Bot Messaging Endpoint**: `https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/api/messages`
-*   **Endpoint Name**: `azcaxyseurue7b6nw-wonderfulrock-5a126c64-u`
+*   **Bot Messaging Endpoint**: `https://<container-app-fqdn>/api/messages`
+*   **Endpoint Name**: `<endpoint-name>`
 *   **Generated Config**: `a365.generated.config.json` (`completed: true`)
 
 ### Publish Details
@@ -224,12 +224,12 @@ During blueprint setup, `Connect-MgGraph` via `pwsh -NonInteractive` returned a 
 ### Configuration Files
 
 #### `a365.config.json` (Static)
-*   `tenantId`: `c2833f41-c31d-4c2f-98d1-947fdb699aba`
-*   `subscriptionId`: `c2833f41-c31d-4c2f-98d1-947fdb699aba` (same as tenantId — no subscription)
+*   `tenantId`: `<m365-tenant-id>`
+*   `subscriptionId`: `<subscription-id>`
 *   `clientAppId`: `8e5206be-48e3-4da4-b741-d3908cf7c30a`
-*   `messagingEndpoint`: `https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/api/messages`
-*   `agentUserPrincipalName`: `salesopsbot@M365CPI14187042.OnMicrosoft.com`
-*   `managerEmail`: `CoreyG@M365CPI14187042.OnMicrosoft.com`
+*   `messagingEndpoint`: `https://<container-app-fqdn>/api/messages`
+*   `agentUserPrincipalName`: `agent.user@example.com`
+*   `managerEmail`: `manager@example.com`
 *   `needDeployment`: `false`
 
 #### `a365.generated.config.json` (Auto-generated by CLI)
@@ -257,7 +257,7 @@ Root cause was AADSTS65001 consent_required — the agent app instance lacked OA
 - **Root Cause Chain**: MCP gateway (`GET /agents/{id}/mcpServers`) returned **0 servers** for agent `5653b53b` → agent created with 0 tools → LLM fabricated answers.
 - **Fix**: Added 3 local `FunctionTool` instances (`get_my_calendar_today`, `get_my_calendar_range`, `get_upcoming_meetings`) in `agent.py` that wrap `graph_client.get_calendar_view()`. These are passed as `initial_tools` to both `_create_agent()` and `setup_mcp_servers()`, ensuring the agent always has calendar access regardless of MCP gateway status.
 - **Image**: `salesopsbot:fix-hallucination-v1`
-- **Revision**: `azcaxyseurue7b6nw--0000019`
+- **Revision**: `<container-app-revision>`
 
 ### Revision History
 
@@ -348,7 +348,7 @@ The Agent 365 instance was created via the Agents store. The actual agentic user
 
 | Property | Configured (a365.config) | Actual (Entra ID) |
 |----------|--------------------------|-------------------|
-| UPN | `salesopsbot@M365CPI14187042.OnMicrosoft.com` | `SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com` |
+| UPN | `agent.user@example.com` | `synthetic.worker@example.com` |
 | Display Name | (not set) | `Sales Op Synth Worker` |
 | Object ID | — | `ec35260f-ceb9-40b1-9e8b-afafe29187cf` |
 | IsAgenticUser | — | `True` |
@@ -371,7 +371,7 @@ The Agent 365 instance was created via the Agents store. The actual agentic user
 **Issue**: Agent not visible in GAL/people picker immediately after creation.  
 **Root Cause**: Exchange Online GAL/OAB propagation takes up to 24 hours for new mailboxes.  
 **Workaround**: Type the full email address directly in meeting invite "To" field in **Outlook on the Web** (OWA queries Exchange directly, bypasses cached OAB).  
-**Email**: `SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com`  
+**Email**: `synthetic.worker@example.com`  
 **Teams limitation**: The `NO_TEAMS` license means the agent won't appear in Teams people picker. This is by design — the agent accesses meeting transcripts via Graph API after meetings, not by joining the Teams call.
 
 ## 9. Agent Activation — Phase 7 (COMPLETE)

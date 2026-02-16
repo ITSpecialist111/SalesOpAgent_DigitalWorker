@@ -3,7 +3,7 @@ apiVersion: 1.0.0
 name: sales-ops-bot
 environment:
   name: ca-env-salesopsbot
-  resourceGroup: rg-salesopsbot
+  resourceGroup: <resource-group>
 
 scale:
   minReplicas: 1
@@ -36,10 +36,10 @@ containers:
 
 secrets:
   - name: azure-openai-api-key
-    keyVaultUrl: https://kv-salesopsbot.vault.azure.net/secrets/azure-openai-api-key
+    keyVaultUrl: https://<key-vault-name>.vault.azure.net/secrets/azure-openai-api-key
     identity: system
   - name: azure-client-secret
-    keyVaultUrl: https://kv-salesopsbot.vault.azure.net/secrets/azure-client-secret
+    keyVaultUrl: https://<key-vault-name>.vault.azure.net/secrets/azure-client-secret
     identity: system
 
 ingress:

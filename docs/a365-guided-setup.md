@@ -140,13 +140,13 @@ For the Sales Ops Bot, we use the **self-hosted** model because we deploy to Azu
 | Field | Value |
 |-------|-------|
 | Deployment Type | Self-hosted (`needDeployment: false`) |
-| Messaging Endpoint | `https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/api/messages` |
-| Resource Group | `rg-salesopsbot` |
+| Messaging Endpoint | `https://<container-app-fqdn>/api/messages` |
+| Resource Group | `<resource-group>` |
 | Location | `uksouth` |
 | Blueprint App ID | `c70fe227-230b-474c-bbf8-1d18483e2801` |
-| Agent UPN | `SalesOpSynthWorker984ebb@M365CPI14187042.onmicrosoft.com` |
-| M365 Tenant | `c2833f41-c31d-4c2f-98d1-947fdb699aba` (Contoso) |
-| Azure Tenant | `b5c09a39-9df6-437a-a76e-19095fa6f20d` (Hosking) |
+| Agent UPN | `agent.user@example.com` |
+| M365 Tenant | `<m365-tenant-id>` |
+| Azure Tenant | `<azure-tenant-id>` |
 
 ## Troubleshooting Quick Reference
 

@@ -4,7 +4,7 @@ To successfully build and deploy the Sales Ops Bot as an Agent 365 "Digital Empl
 
 ## Current Runtime Validation (2026-02-16)
 
-- Active revision: `azcaxyseurue7b6nw--azd-1771242381` (healthy, running, 100% traffic)
+- Active revision: `<container-app-revision>` (healthy, running, 100% traffic)
 - Health endpoint: `status=ok`, `agent_initialized=true`, `mcp.state=ready`
 - Focused report tests: passing
 
@@ -15,7 +15,7 @@ You will need a Microsoft 365 Tenant with the following:
 - [x] **Agent 365 License**: Trial or production license pack applied to tenant.
 - [x] **Azure Subscription**: For hosting the agent logic (Azure Container Apps) and LLM resources (Azure OpenAI).
 
-> **Note:** This project uses a **split-tenant** configuration. Azure infrastructure is in the HOSKING tenant; the M365 identity is in the Contoso tenant. See `docs/TROUBLESHOOTING-A365.md` for details.
+> **Note:** This project uses a **split-tenant** configuration. Azure infrastructure and M365 identity can live in different tenants. See `docs/TROUBLESHOOTING-A365.md` for details.
 
 ## 2. App Registration (Permissions)
 
@@ -116,23 +116,23 @@ Stored in Azure Key Vault (`azkvxyseurue7b6nw`) and referenced via Container App
 az acr build --registry azcrxyseurue7b6nw --image salesopsbot:<tag> --file Dockerfile . --no-logs
 
 # Deploy to Container App
-az containerapp update --name azcaxyseurue7b6nw --resource-group rg-salesopsbot --image azcrxyseurue7b6nw.azurecr.io/salesopsbot:<tag>
+az containerapp update --name <container-app-name> --resource-group <resource-group> --image <acr-name>.azurecr.io/salesopsbot:<tag>
 
 # Check revision status
-az containerapp revision list --name azcaxyseurue7b6nw --resource-group rg-salesopsbot -o table
+az containerapp revision list --name <container-app-name> --resource-group <resource-group> -o table
 
 # Tail logs
-az containerapp logs show --name azcaxyseurue7b6nw --resource-group rg-salesopsbot --type console --tail 80 --follow false
+az containerapp logs show --name <container-app-name> --resource-group <resource-group> --type console --tail 80 --follow false
 ```
 
 ## 7. Verification
 
 ```powershell
 # Check container is running
-Invoke-RestMethod -Uri "https://azcaxyseurue7b6nw.wonderfulrock-5a126c64.uksouth.azurecontainerapps.io/" -Method GET
+Invoke-RestMethod -Uri "https://<container-app-fqdn>/" -Method GET
 
 # Check logs for tool count
-az containerapp logs show --name azcaxyseurue7b6nw --resource-group rg-salesopsbot --type console --tail 50 --follow false 2>&1 | Select-String "running agent with"
+az containerapp logs show --name <container-app-name> --resource-group <resource-group> --type console --tail 50 --follow false 2>&1 | Select-String "running agent with"
 
 # Run tests locally
 pip install -e ".[dev]"

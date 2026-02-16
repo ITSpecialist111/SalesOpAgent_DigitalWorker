@@ -7,7 +7,7 @@ Final state: fixed and verified in production.
 
 ## Production Validation Snapshot (2026-02-16)
 
-- Active revision: `azcaxyseurue7b6nw--azd-1771242381`
+- Active revision: `<container-app-revision>`
 - Container app status: Running / Healthy / 100% traffic on latest revision
 - Health endpoint: `status=ok`, `agent_initialized=true`, MCP `state=ready`
 
