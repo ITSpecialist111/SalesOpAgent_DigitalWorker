@@ -1,0 +1,48 @@
+$schema: https://azure.github.io/aca/0.9.0/deployment.schema.json
+apiVersion: 1.0.0
+name: sales-ops-bot
+environment:
+  name: ca-env-salesopsbot
+  resourceGroup: rg-salesopsbot
+
+scale:
+  minReplicas: 1
+  maxReplicas: 1
+
+containers:
+  - name: sales-ops-bot
+    image: sales-ops-bot:latest
+    cpu: 1.0
+    memory: 2.0Gi
+    
+    env:
+      - name: AZURE_OPENAI_API_KEY
+        secretRef: azure-openai-api-key
+      - name: CONNECTIONS__SERVICE_CONNECTION__SETTINGS__CLIENTSECRET
+        secretRef: azure-client-secret
+      - name: CONNECTIONS__SERVICE_CONNECTION__SETTINGS__CLIENTID
+        value: <REPLACE_WITH_CLIENT_ID>
+      - name: CONNECTIONS__SERVICE_CONNECTION__SETTINGS__TENANTID
+        value: <REPLACE_WITH_TENANT_ID>
+      # Auth Handler Settings for Agentic Auth
+      - name: AUTH_HANDLER_NAME
+        value: AGENTIC
+      - name: AGENTAPPLICATION__USERAUTHORIZATION__HANDLERS__AGENTIC__SETTINGS__TYPE
+        value: AgenticUserAuthorization
+      - name: AGENTAPPLICATION__USERAUTHORIZATION__HANDLERS__AGENTIC__SETTINGS__ALT_BLUEPRINT_NAME
+        value: SERVICE_CONNECTION
+      - name: AGENTAPPLICATION__USERAUTHORIZATION__HANDLERS__AGENTIC__SETTINGS__SCOPES
+        value: https://graph.microsoft.com/.default
+
+secrets:
+  - name: azure-openai-api-key
+    keyVaultUrl: https://kv-salesopsbot.vault.azure.net/secrets/azure-openai-api-key
+    identity: system
+  - name: azure-client-secret
+    keyVaultUrl: https://kv-salesopsbot.vault.azure.net/secrets/azure-client-secret
+    identity: system
+
+ingress:
+  external: true
+  targetPort: 8000
+  transport: auto

@@ -1,0 +1,15 @@
+# Azure Developer CLI configuration
+# For more details, see: https://learn.microsoft.com/azure/developer/azure-developer-cli/
+
+name: sales-ops-bot
+metadata:
+  template: sales-ops-bot@0.0.1
+
+services:
+  sales-ops-bot:
+    project: .
+    language: python
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: .

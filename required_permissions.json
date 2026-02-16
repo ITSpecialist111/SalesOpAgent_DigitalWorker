@@ -1,0 +1,40 @@
+﻿[
+  {
+    "resourceAppId": "ea9ffc3e-8a23-4a7d-836d-234d7c7565c1",
+    "resourceAccess": [
+      {"id": "127adc5b-6aa1-4b75-924b-87145052e3c2", "type": "Scope"},
+      {"id": "44abd56c-9166-429d-8edb-372a2ec3e091", "type": "Scope"},
+      {"id": "d83d751a-4da2-4af2-832d-6f24b8a38b9a", "type": "Scope"},
+      {"id": "6d5f0339-7183-455f-aa02-0913bd30a916", "type": "Scope"},
+      {"id": "965326d7-c2b4-4ae5-9833-a7286013fb2c", "type": "Scope"},
+      {"id": "1a2a5c28-5fcf-415c-8b8b-56a87e766dba", "type": "Scope"},
+      {"id": "c1463966-a610-4d15-a74f-3dc191eb4f37", "type": "Scope"},
+      {"id": "c82361df-5248-4308-ae97-a1fc509291f4", "type": "Scope"},
+      {"id": "e69104b3-1c54-40e3-8cac-ba981a24bbc8", "type": "Scope"},
+      {"id": "6d8f6be6-0dab-4c0f-b481-ba1d73227be5", "type": "Scope"},
+      {"id": "041cabe0-7820-49b8-be02-b170d16559e2", "type": "Scope"},
+      {"id": "342a1c02-975d-4f22-bae9-56a200ca9fd0", "type": "Scope"},
+      {"id": "45b74cfc-7a12-4589-8d26-781de38fbfcc", "type": "Scope"},
+      {"id": "be685e8e-277f-43ec-aff6-087fdca57ca3", "type": "Scope"},
+      {"id": "5efd4b9c-e459-40d4-a524-35db033b072f", "type": "Scope"},
+      {"id": "2ce6ce0f-4701-4b11-8087-5031f87ad5b9", "type": "Scope"},
+      {"id": "75c3a580-2c8f-4906-adc6-ffa8601d78dc", "type": "Scope"},
+      {"id": "8d00067e-ea97-437e-8eb7-9c09e2d9ceb7", "type": "Scope"},
+      {"id": "798204a9-2b1d-4109-a2d6-3c641183c48c", "type": "Scope"},
+      {"id": "c80101f0-b7e0-4a85-b8c2-0c855aeced97", "type": "Scope"},
+      {"id": "6f7b3c3c-d822-4164-b9ec-8bf520399d24", "type": "Scope"},
+      {"id": "4ad939ce-e965-4562-93da-88c7e1a66fbc", "type": "Scope"}
+    ]
+  },
+  {
+    "resourceAppId": "00000003-0000-0000-c000-000000000000",
+    "resourceAccess": [
+      {"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d", "type": "Scope"},
+      {"id": "bdfbf15f-ee85-4955-8675-146e8e5296b5", "type": "Scope"},
+      {"id": "41ce6ca6-6826-4807-84f1-1c82854f7ee5", "type": "Scope"},
+      {"id": "06da0dbc-49e2-44d2-8312-53f166ab848a", "type": "Scope"},
+      {"id": "4fd490fc-1467-48eb-8a4c-421597ab0402", "type": "Scope"},
+      {"id": "6f677aa9-25af-49a5-8a1d-628dc7f0d009", "type": "Scope"}
+    ]
+  }
+]

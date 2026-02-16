@@ -1,0 +1,33 @@
+
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/vdevPreview/MicrosoftTeams.schema.json",
+  "id": "c70fe227-230b-474c-bbf8-1d18483e2801",
+  "name": {
+    "short": "Sales Ops Bot Blueprint",
+    "full": "Sales Ops Bot Blueprint"
+  },
+  "description": {
+    "short": "Sales Operations digital worker for meeting intelligence and follow-up.",
+    "full": "Sales Ops Bot is an Agent 365 digital employee that monitors meeting outcomes, retrieves transcripts via Microsoft Graph, analyses discussions with Azure OpenAI, and prepares structured follow-up outputs for Dynamics 365 workflows. It supports on-demand meeting reports and MCP-assisted delivery paths for Microsoft 365 collaboration scenarios."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#9ec9d9",
+  "version": "1.2.0",
+  "manifestVersion": "devPreview",
+  "developer": {
+    "name": "Microsoft Corporation",
+    "mpnId": "",
+    "websiteUrl": "https://go.microsoft.com/fwlink/?LinkId=518028",
+    "privacyUrl": "https://go.microsoft.com/fwlink/?LinkId=518028",
+    "termsOfUseUrl": "https://shares.datatransfer.microsoft.com/assets/Microsoft_Terms_of_Use.html"
+  },
+  "agenticUserTemplates": [
+    {
+      "id": "7b0926a6-c4ee-445a-a913-bd054594bd09",
+      "file": "agenticUserTemplateManifest.json"
+    }
+  ]
+}
